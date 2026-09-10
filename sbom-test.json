@@ -1,0 +1,22 @@
+{
+  "document": {
+    "name": "NexaCloud Customer Portal",
+    "version": "4.8.2",
+    "generatedAt": "2026-09-08T14:30:00Z",
+    "format": "SBOM Risk Studio 1.0"
+  },
+  "components": [
+    { "name": "log4j-core", "version": "2.14.1", "supplier": "Apache Software Foundation", "supplierCountry": "US", "license": "Apache-2.0", "moduleType": "open-source", "criticality": "critical", "vulnerabilities": 3, "maxSeverity": "critical", "maintained": true, "direct": true },
+    { "name": "left-pad", "version": "1.3.0", "supplier": "Independent maintainer", "supplierCountry": "TR", "license": "WTFPL", "moduleType": "open-source", "criticality": "low", "vulnerabilities": 0, "maxSeverity": "none", "maintained": false, "direct": false },
+    { "name": "openssl", "version": "1.1.1w", "supplier": "OpenSSL Software Foundation", "supplierCountry": "GB", "license": "Apache-2.0", "moduleType": "open-source", "criticality": "critical", "vulnerabilities": 2, "maxSeverity": "high", "maintained": false, "direct": true },
+    { "name": "payment-sdk", "version": "7.2.0", "supplier": "FinCore Systems", "supplierCountry": "US", "license": "Commercial", "moduleType": "proprietary", "criticality": "critical", "vulnerabilities": 0, "maxSeverity": "none", "maintained": true, "direct": true },
+    { "name": "analytics-engine", "version": "3.4.7", "supplier": "Shenzhen Data Intelligence", "supplierCountry": "CN", "license": "Commercial", "moduleType": "proprietary", "criticality": "high", "vulnerabilities": 1, "maxSeverity": "high", "maintained": true, "direct": true },
+    { "name": "lodash", "version": "4.17.20", "supplier": "OpenJS Foundation", "supplierCountry": "US", "license": "MIT", "moduleType": "open-source", "criticality": "medium", "vulnerabilities": 2, "maxSeverity": "high", "maintained": true, "direct": false },
+    { "name": "identity-connector", "version": "2.1.3", "supplier": "NordSec AB", "supplierCountry": "SE", "license": "Commercial", "moduleType": "proprietary", "criticality": "high", "vulnerabilities": 0, "maxSeverity": "none", "maintained": true, "direct": true },
+    { "name": "moment", "version": "2.29.1", "supplier": "JS Foundation", "supplierCountry": "US", "license": "MIT", "moduleType": "open-source", "criticality": "medium", "vulnerabilities": 1, "maxSeverity": "moderate", "maintained": false, "direct": false },
+    { "name": "reporting-core", "version": "5.0.1", "supplier": "Unknown", "supplierCountry": "RU", "license": "Unknown", "moduleType": "unknown", "criticality": "high", "vulnerabilities": 1, "maxSeverity": "critical", "maintained": false, "direct": false },
+    { "name": "react", "version": "18.3.1", "supplier": "Meta Open Source", "supplierCountry": "US", "license": "MIT", "moduleType": "open-source", "criticality": "medium", "vulnerabilities": 0, "maxSeverity": "none", "maintained": true, "direct": true },
+    { "name": "pdf-renderer", "version": "8.9.0", "supplier": "Alpine Documents GmbH", "supplierCountry": "DE", "license": "Commercial", "moduleType": "proprietary", "criticality": "medium", "vulnerabilities": 0, "maxSeverity": "none", "maintained": true, "direct": false },
+    { "name": "xml-parser", "version": "0.9.4", "supplier": "Community project", "supplierCountry": "IN", "license": "GPL-2.0", "moduleType": "open-source", "criticality": "high", "vulnerabilities": 2, "maxSeverity": "high", "maintained": false, "direct": false }
+  ]
+}
