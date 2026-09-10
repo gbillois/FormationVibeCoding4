@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CyberSnake // Skills Validation</title>
+  <style>
+    :root { --ink:#eafef6; --muted:#8eaaa0; --green:#b9ff66; --mint:#48edaa; --cyan:#48d7ff; --red:#ff617e; --panel:#101c1b; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--ink); background:#07100f; font-family:Inter,ui-sans-serif,system-ui,-apple-system,sans-serif; overflow-x:hidden; }
+    body::before { content:""; position:fixed; inset:0; pointer-events:none; background:linear-gradient(rgba(72,237,170,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(72,237,170,.035) 1px,transparent 1px); background-size:42px 42px; mask-image:linear-gradient(to bottom,#000,transparent 88%); }
+    body::after { content:""; position:fixed; width:520px; height:520px; left:50%; top:-300px; transform:translateX(-50%); border-radius:50%; background:rgba(72,237,170,.12); filter:blur(110px); pointer-events:none; }
+    button { font:inherit; }
+    .shell { width:min(1180px,calc(100% - 32px)); margin:auto; position:relative; }
+    header { min-height:92px; border-bottom:1px solid #243733; display:flex; align-items:center; justify-content:space-between; gap:24px; }
+    .brand { display:flex; align-items:center; gap:13px; font-weight:850; letter-spacing:.07em; }
+    .brand-mark { width:38px; height:38px; display:grid; place-items:center; color:#07100f; background:var(--green); clip-path:polygon(50% 0,94% 25%,94% 75%,50% 100%,6% 75%,6% 25%); font-size:19px; }
+    .brand span span { color:var(--green); }
+    .session { display:flex; align-items:center; gap:10px; color:var(--muted); font:700 11px ui-monospace,monospace; letter-spacing:.13em; text-transform:uppercase; }
+    .pulse { width:8px; height:8px; border-radius:50%; background:var(--mint); box-shadow:0 0 14px var(--mint); }
+    main { padding:48px 0 62px; }
+    .eyebrow { margin:0 0 12px; color:var(--mint); font:800 11px ui-monospace,monospace; text-transform:uppercase; letter-spacing:.22em; }
+    h1 { margin:0; font-size:clamp(38px,6vw,70px); line-height:.98; letter-spacing:-.055em; max-width:800px; }
+    .lede { color:var(--muted); max-width:610px; margin:18px 0 34px; line-height:1.65; }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr) 300px; gap:22px; align-items:start; }
+    .game-card,.side-card { background:linear-gradient(145deg,rgba(18,32,30,.98),rgba(10,20,19,.98)); border:1px solid #273c37; border-radius:18px; box-shadow:0 24px 80px #0006; }
+    .game-card { padding:18px; }
+    .game-toolbar { min-height:48px; display:flex; justify-content:space-between; align-items:center; gap:16px; padding:0 4px 14px; }
+    .label { display:block; color:#79958b; font:700 9px ui-monospace,monospace; text-transform:uppercase; letter-spacing:.17em; margin-bottom:5px; }
+    .stat { font:800 18px ui-monospace,monospace; }
+    .toolbar-stats { display:flex; gap:30px; text-align:right; }
+    .canvas-wrap { position:relative; background:#06100e; border:1px solid #263b36; border-radius:11px; overflow:hidden; }
+    canvas { display:block; width:100%; aspect-ratio:1.65; }
+    .scanlines { position:absolute; inset:0; pointer-events:none; opacity:.16; background:repeating-linear-gradient(0deg,transparent 0 3px,#000 4px); }
+    .overlay { position:absolute; inset:0; display:grid; place-items:center; padding:22px; background:rgba(4,12,11,.74); backdrop-filter:blur(5px); transition:.2s; }
+    .overlay.hidden { opacity:0; pointer-events:none; }
+    .start-box { text-align:center; }
+    .snake-icon { font-size:42px; margin-bottom:8px; filter:drop-shadow(0 0 12px #b9ff6680); }
+    .start-box h2 { margin:0 0 8px; font-size:27px; }
+    .start-box p { color:var(--muted); margin:0 0 22px; }
+    .primary { border:0; border-radius:7px; background:var(--green); color:#07100f; padding:13px 22px; font-weight:900; cursor:pointer; box-shadow:0 0 24px #b9ff6630; text-transform:uppercase; letter-spacing:.07em; font-size:12px; }
+    .primary:hover { background:#d0ff96; transform:translateY(-1px); }
+    .side-card { padding:23px; }
+    .side-card h3 { font-size:13px; text-transform:uppercase; letter-spacing:.13em; margin:0 0 22px; }
+    .progress-ring { width:140px; height:140px; margin:4px auto 25px; border-radius:50%; display:grid; place-items:center; background:conic-gradient(var(--green) 0deg,#263934 0); position:relative; }
+    .progress-ring::after { content:""; width:116px; height:116px; position:absolute; border-radius:50%; background:#101c1b; }
+    .ring-copy { position:relative; z-index:1; text-align:center; }
+    .ring-copy strong { font:850 28px ui-monospace,monospace; }
+    .ring-copy small { display:block; color:var(--muted); font-size:10px; text-transform:uppercase; letter-spacing:.1em; }
+    .topics { display:grid; gap:11px; margin-top:20px; }
+    .topic { display:flex; justify-content:space-between; color:var(--muted); padding-bottom:11px; border-bottom:1px solid #263934; font:700 11px ui-monospace,monospace; letter-spacing:.08em; }
+    .topic i { width:7px; height:7px; border-radius:2px; background:var(--mint); display:inline-block; margin-right:8px; }
+    .instructions { color:#779188; font-size:11px; line-height:1.7; margin:19px 0 0; }
+    .keys { display:flex; gap:5px; margin-top:10px; }
+    kbd { padding:4px 7px; border-radius:4px; background:#1b2d29; border:1px solid #395249; font:700 10px ui-monospace,monospace; color:#b6cac3; }
+    .question { text-align:left; width:min(580px,100%); padding:27px; border:1px solid #38534b; border-radius:14px; background:#101d1b; box-shadow:0 28px 80px #000a; }
+    .q-meta { display:flex; justify-content:space-between; color:var(--mint); font:800 10px ui-monospace,monospace; letter-spacing:.14em; text-transform:uppercase; }
+    .question h2 { font-size:clamp(18px,3vw,25px); line-height:1.3; margin:17px 0 20px; }
+    .answers { display:grid; gap:9px; }
+    .answer { width:100%; border:1px solid #334a44; background:#152522; color:#dcefe8; border-radius:8px; padding:13px 15px; text-align:left; cursor:pointer; display:flex; gap:12px; align-items:flex-start; line-height:1.4; }
+    .answer:hover { border-color:var(--mint); background:#1b302b; }
+    .answer b { color:var(--green); font:800 11px ui-monospace,monospace; padding-top:2px; }
+    .answer:disabled { cursor:default; }
+    .answer.correct { border-color:var(--mint); background:#15382d; }
+    .answer.wrong { border-color:var(--red); background:#3a1c24; }
+    .feedback { min-height:20px; margin:14px 0 0; font-size:12px; color:var(--muted); }
+    .result-score { font:900 45px ui-monospace,monospace; color:var(--green); margin:10px 0 2px; }
+    .mobile-controls { display:none; grid-template-columns:repeat(3,46px); justify-content:center; gap:5px; margin:14px 0 0; }
+    .mobile-controls button { height:42px; border:1px solid #365047; color:var(--ink); background:#172723; border-radius:6px; }
+    .mobile-controls .up { grid-column:2; } .mobile-controls .left { grid-column:1; } .mobile-controls .down { grid-column:2; } .mobile-controls .right { grid-column:3; }
+    @media(max-width:800px){ header{min-height:72px}.session{display:none} main{padding-top:32px}.layout{grid-template-columns:1fr}.side-card{display:none}.mobile-controls{display:grid} canvas{aspect-ratio:1.2}.game-card{padding:10px}.lede{margin-bottom:24px}.toolbar-stats{gap:15px} }
+  </style>
+</head>
+<body>
+  <header class="shell">
+    <div class="brand"><div class="brand-mark">⌁</div><span>CYBER<span>SNAKE</span></span></div>
+    <div class="session"><span class="pulse"></span> Assessment environment online</div>
+  </header>
+  <main class="shell">
+    <p class="eyebrow">// Interactive skills validation</p>
+    <h1>Navigate. Answer.<br>Prove your skills.</h1>
+    <p class="lede">Collect data nodes to unlock 10 challenges across IAM, GRC, SOC and AI security. Score 9 or higher to validate your skills.</p>
+    <section class="layout">
+      <div class="game-card">
+        <div class="game-toolbar">
+          <div><span class="label">Current operation</span><span class="stat" id="status">STANDBY</span></div>
+          <div class="toolbar-stats"><div><span class="label">Nodes</span><span class="stat"><span id="nodes">0</span>/10</span></div><div><span class="label">Correct</span><span class="stat" id="correct">0</span></div></div>
+        </div>
+        <div class="canvas-wrap">
+          <canvas id="game" width="825" height="500" aria-label="Snake game board"></canvas><div class="scanlines"></div>
+          <div class="overlay" id="overlay"><div class="start-box" id="panel"><div class="snake-icon">⌁</div><h2>Ready to infiltrate?</h2><p>Use arrow keys or WASD to collect the glowing node.</p><button class="primary" id="start">Start operation</button></div></div>
+        </div>
+        <div class="mobile-controls" aria-label="Touch controls"><button class="up" data-dir="up">▲</button><button class="left" data-dir="left">◀</button><button class="down" data-dir="down">▼</button><button class="right" data-dir="right">▶</button></div>
+      </div>
+      <aside class="side-card">
+        <h3>Mission progress</h3>
+        <div class="progress-ring" id="ring"><div class="ring-copy"><strong id="percent">0%</strong><small>complete</small></div></div>
+        <span class="label">Domains in scope</span>
+        <div class="topics"><div class="topic"><span><i></i>IAM</span><span>IDENTITY</span></div><div class="topic"><span><i></i>GRC</span><span>RISK</span></div><div class="topic"><span><i></i>SOC</span><span>DEFENSE</span></div><div class="topic"><span><i></i>AI SECURITY</span><span>EMERGING</span></div></div>
+        <p class="instructions">Collect a node → answer one challenge → resume the operation. Hitting a wall resets your snake, not your assessment.</p>
+        <div class="keys"><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span class="label" style="margin:5px 0 0 5px">to move</span></div>
+      </aside>
+    </section>
+  </main>
+  <script>
+    const bank = [
+      ['IAM','Which control best enforces least privilege?',['Give everyone read access','Review roles annually but keep broad defaults','Grant only task-required permissions and review them regularly'],2],
+      ['IAM','What is the strongest approach to administrator authentication?',['A long username','A password plus a knowledge question','Phishing-resistant MFA such as a hardware security key'],2],
+      ['IAM','What is role-based access control (RBAC)?',['Access based on device location only','Permissions assigned individually, using roles as labels','Permissions grouped by job-function roles and assigned to users'],2],
+      ['IAM','When an employee leaves, what should happen first?',['Rename their account','Disable access at the next quarterly review','Promptly revoke accounts, sessions, tokens and physical access'],2],
+      ['IAM','What is identity federation?',['Copying passwords between apps','Using one password format across systems','Trusting an identity provider to authenticate users across services'],2],
+      ['IAM','Why use just-in-time privileged access?',['To make admin access permanent','To approve access quickly without expiration','To grant elevated access only when needed and for a limited time'],2],
+      ['IAM','What does separation of duties reduce?',['The number of login screens','Risk by letting one person approve and execute a task','Fraud and error by splitting critical steps between people'],2],
+      ['IAM','What should a service account have?',['A shared human password','Broad access to prevent outages','A non-interactive identity, scoped permissions and rotated secrets'],2],
+      ['GRC','In risk management, risk is commonly evaluated using…',['The age of the system','Only the financial cost of an incident','Likelihood and impact'],2],
+      ['GRC','What is the purpose of a risk register?',['List every company laptop','Document only risks already eliminated','Track identified risks, owners, treatment and status'],2],
+      ['GRC','What does risk acceptance mean?',['Ignoring a risk without review','Transferring the risk to the security team','Formally acknowledging and retaining a risk within tolerance'],2],
+      ['GRC','Which is an example of risk transfer?',['Deleting all data','Installing a firewall','Purchasing cyber insurance with understood coverage'],2],
+      ['GRC','What makes a policy effective?',['It is technically detailed and never updated','It is published once to all employees','It has ownership, clear requirements, communication and review'],2],
+      ['GRC','What is a compensating control?',['A control that refunds incident costs','A weaker version of the required control','An alternative control that meets the original security objective'],2],
+      ['GRC','Why map controls to multiple frameworks?',['To increase the audit document count','To guarantee automatic compliance','To reuse evidence and identify overlapping requirements'],2],
+      ['GRC','What is residual risk?',['Risk discovered after an audit','Risk transferred to a vendor','Risk remaining after controls are applied'],2],
+      ['SOC','What should a SOC analyst do first after receiving an alert?',['Immediately wipe the device','Close it if the user seems trustworthy','Triage and validate the alert using available context'],2],
+      ['SOC','What is the key difference between an event and an incident?',['Events are always malicious','An incident is any failed login','An incident is an event that threatens security and requires response'],2],
+      ['SOC','Why establish a log retention policy?',['To retain every log forever','To reduce search time by deleting old logs daily','To meet investigation, business and regulatory needs'],2],
+      ['SOC','What is an indicator of compromise (IOC)?',['Proof of who attacked','Any unusual employee action','Observable evidence associated with a potential intrusion'],2],
+      ['SOC','During containment, the primary goal is to…',['Write the final report','Remove every vulnerability permanently','Limit damage and stop the incident from spreading'],2],
+      ['SOC','What is a SIEM correlation rule used for?',['Encrypting stored logs','Replacing analysts with automated decisions','Linking relevant events to identify suspicious patterns'],2],
+      ['SOC','Why preserve chain of custody?',['To speed up alert closure','To prove the attacker’s motive','To document evidence handling and support its integrity'],2],
+      ['SOC','What is threat hunting?',['Waiting for high-severity alerts','Scanning only for known malware hashes','Proactively searching for threats that evaded existing controls'],2],
+      ['AI SECURITY','What is prompt injection?',['A method for training models faster','Any long user prompt','Input crafted to override instructions or manipulate model behavior'],2],
+      ['AI SECURITY','How should sensitive data be handled in public AI tools?',['Paste it, then clear browser history','Use it if the prompt does not mention names','Do not submit it unless approved controls and agreements protect it'],2],
+      ['AI SECURITY','What helps reduce model hallucination risk?',['Increasing response creativity','Trusting answers that sound confident','Grounding outputs in trusted sources and requiring verification'],2],
+      ['AI SECURITY','What is an AI model supply-chain risk?',['Slow model download speeds','Using a model from a well-known file format','Compromised models, datasets or dependencies entering the system'],2],
+      ['AI SECURITY','Why red-team a generative AI system?',['To improve its brand voice','To make all responses shorter','To discover exploitable behaviors and harmful failure modes'],2],
+      ['AI SECURITY','What is an appropriate control for AI output used in high-impact decisions?',['Hide that AI was used','Accept output if model confidence exceeds 50%','Require meaningful human review and a documented override process'],2]
+    ];
+    const canvas=document.querySelector('#game'),ctx=canvas.getContext('2d'),overlay=document.querySelector('#overlay'),panel=document.querySelector('#panel');
+    const $=id=>document.getElementById(id); let snake,food,dir,nextDir,timer,questions,index,score=0,running=false,locked=false;
+    const cell=25, cols=canvas.width/cell, rows=canvas.height/cell;
+    function shuffle(a){ return [...a].sort(()=>Math.random()-.5); }
+    function resetSnake(){ snake=[{x:8,y:10},{x:7,y:10},{x:6,y:10}]; dir={x:1,y:0}; nextDir=dir; spawn(); }
+    function spawn(){ do{food={x:Math.floor(Math.random()*cols),y:Math.floor(Math.random()*rows)}}while(snake.some(s=>s.x===food.x&&s.y===food.y)); }
+    function draw(){ ctx.fillStyle='#07110f';ctx.fillRect(0,0,canvas.width,canvas.height);ctx.strokeStyle='#10231f';ctx.lineWidth=1;for(let x=0;x<=canvas.width;x+=cell){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,canvas.height);ctx.stroke()}for(let y=0;y<=canvas.height;y+=cell){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(canvas.width,y);ctx.stroke()} const pulse=.72+.28*Math.sin(Date.now()/160);ctx.shadowColor='#48d7ff';ctx.shadowBlur=18*pulse;ctx.fillStyle='#48d7ff';ctx.fillRect(food.x*cell+7,food.y*cell+7,11,11);ctx.shadowBlur=0;snake.forEach((s,i)=>{ctx.fillStyle=i?'#48edaa':'#b9ff66';ctx.shadowColor='#48edaa';ctx.shadowBlur=i?3:12;ctx.fillRect(s.x*cell+2,s.y*cell+2,cell-4,cell-4)});ctx.shadowBlur=0; }
+    function tick(){ if(!running)return;dir=nextDir;const head={x:snake[0].x+dir.x,y:snake[0].y+dir.y};if(head.x<0||head.x>=cols||head.y<0||head.y>=rows||snake.some(s=>s.x===head.x&&s.y===head.y)){resetSnake();draw();return}snake.unshift(head);if(head.x===food.x&&head.y===food.y){running=false;clearInterval(timer);draw();ask()}else snake.pop();draw(); }
+    function setDir(x,y){if(!running)return;if(x!==-dir.x||y!==-dir.y)nextDir={x,y};}
+    function startGame(){questions=shuffle(bank).slice(0,10);index=0;score=0;update();resetSnake();overlay.classList.add('hidden');$('status').textContent='ACTIVE';running=true;clearInterval(timer);timer=setInterval(tick,105);draw();}
+    function ask(){const [topic,q,answers,correct]=questions[index],choices=shuffle(answers.map((text,i)=>({text,isCorrect:i===correct}))),correctChoice=choices.findIndex(a=>a.isCorrect);locked=false;$('status').textContent='CHALLENGE';overlay.classList.remove('hidden');panel.innerHTML=`<div class="question"><div class="q-meta"><span>${topic}</span><span>Challenge ${index+1} / 10</span></div><h2>${q}</h2><div class="answers">${choices.map((a,i)=>`<button class="answer" data-i="${i}"><b>${String.fromCharCode(65+i)}</b><span>${a.text}</span></button>`).join('')}</div><p class="feedback">Select the strongest answer.</p></div>`;panel.querySelectorAll('.answer').forEach(b=>b.onclick=()=>answer(+b.dataset.i,correctChoice));}
+    function answer(choice,correct){if(locked)return;locked=true;const buttons=[...panel.querySelectorAll('.answer')];buttons.forEach((b,i)=>{b.disabled=true;if(i===correct)b.classList.add('correct');if(i===choice&&choice!==correct)b.classList.add('wrong')});if(choice===correct)score++;panel.querySelector('.feedback').textContent=choice===correct?'✓ Correct. Secure thinking confirmed.':'✕ Not quite. The strongest answer is highlighted.';index++;update();setTimeout(()=>{if(index===10)finish();else{overlay.classList.add('hidden');$('status').textContent='ACTIVE';spawn();running=true;timer=setInterval(tick,105)}},1200);}
+    function update(){$('nodes').textContent=index;$('correct').textContent=score;const p=index*10;$('percent').textContent=p+'%';$('ring').style.background=`conic-gradient(var(--green) ${p*3.6}deg,#263934 0)`;}
+    function finish(){running=false;$('status').textContent='COMPLETE';const passed=score>8;panel.innerHTML=`<div class="start-box"><p class="eyebrow">// Operation complete</p><div class="result-score">${score}/10</div><h2>${passed?'Skills validated':'Keep training'}</h2><p>${passed?'Outstanding work. Your cyber fundamentals are mission-ready.':'Score 9 or higher to validate your skills. Review the domains and try again.'}</p><button class="primary" id="again">Run again</button></div>`;$('again').onclick=startGame;}
+    document.addEventListener('keydown',e=>{const m={ArrowUp:[0,-1],w:[0,-1],W:[0,-1],ArrowDown:[0,1],s:[0,1],S:[0,1],ArrowLeft:[-1,0],a:[-1,0],A:[-1,0],ArrowRight:[1,0],d:[1,0],D:[1,0]};if(m[e.key]){e.preventDefault();setDir(...m[e.key])}});document.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>({up:()=>setDir(0,-1),down:()=>setDir(0,1),left:()=>setDir(-1,0),right:()=>setDir(1,0)})[b.dataset.dir]());$('start').onclick=startGame;resetSnake();draw();
+  </script>
+</body>
+</html>
