@@ -40,6 +40,9 @@
     .start-box p { color:var(--muted); margin:0 0 22px; }
     .primary { border:0; border-radius:7px; background:var(--green); color:#07100f; padding:13px 22px; font-weight:900; cursor:pointer; box-shadow:0 0 24px #b9ff6630; text-transform:uppercase; letter-spacing:.07em; font-size:12px; }
     .primary:hover { background:#d0ff96; transform:translateY(-1px); }
+    .result-actions { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin-top:22px; }
+    .secondary { border:1px solid var(--mint); border-radius:7px; background:transparent; color:var(--mint); padding:12px 20px; font-weight:900; cursor:pointer; text-transform:uppercase; letter-spacing:.07em; font-size:12px; }
+    .secondary:hover { background:#15382d; transform:translateY(-1px); }
     .side-card { padding:23px; }
     .side-card h3 { font-size:13px; text-transform:uppercase; letter-spacing:.13em; margin:0 0 22px; }
     .progress-ring { width:140px; height:140px; margin:4px auto 25px; border-radius:50%; display:grid; place-items:center; background:conic-gradient(var(--green) 0deg,#263934 0); position:relative; }
@@ -148,7 +151,33 @@
     function ask(){const [topic,q,answers,correct]=questions[index],choices=shuffle(answers.map((text,i)=>({text,isCorrect:i===correct}))),correctChoice=choices.findIndex(a=>a.isCorrect);locked=false;$('status').textContent='CHALLENGE';overlay.classList.remove('hidden');panel.innerHTML=`<div class="question"><div class="q-meta"><span>${topic}</span><span>Challenge ${index+1} / 10</span></div><h2>${q}</h2><div class="answers">${choices.map((a,i)=>`<button class="answer" data-i="${i}"><b>${String.fromCharCode(65+i)}</b><span>${a.text}</span></button>`).join('')}</div><p class="feedback">Select the strongest answer.</p></div>`;panel.querySelectorAll('.answer').forEach(b=>b.onclick=()=>answer(+b.dataset.i,correctChoice));}
     function answer(choice,correct){if(locked)return;locked=true;const buttons=[...panel.querySelectorAll('.answer')];buttons.forEach((b,i)=>{b.disabled=true;if(i===correct)b.classList.add('correct');if(i===choice&&choice!==correct)b.classList.add('wrong')});if(choice===correct)score++;panel.querySelector('.feedback').textContent=choice===correct?'✓ Correct. Secure thinking confirmed.':'✕ Not quite. The strongest answer is highlighted.';index++;update();setTimeout(()=>{if(index===10)finish();else{overlay.classList.add('hidden');$('status').textContent='ACTIVE';spawn();running=true;timer=setInterval(tick,105)}},1200);}
     function update(){$('nodes').textContent=index;$('correct').textContent=score;const p=index*10;$('percent').textContent=p+'%';$('ring').style.background=`conic-gradient(var(--green) ${p*3.6}deg,#263934 0)`;}
-    function finish(){running=false;$('status').textContent='COMPLETE';const passed=score>8;panel.innerHTML=`<div class="start-box"><p class="eyebrow">// Operation complete</p><div class="result-score">${score}/10</div><h2>${passed?'Skills validated':'Keep training'}</h2><p>${passed?'Outstanding work. Your cyber fundamentals are mission-ready.':'Score 9 or higher to validate your skills. Review the domains and try again.'}</p><button class="primary" id="again">Run again</button></div>`;$('again').onclick=startGame;}
+    function downloadResultEmail(){
+      const passed=score>8;
+      const lines=[
+        'To: cyberacadamy@wavestone.Com',
+        `Subject: Résultat CyberSnake - ${score}/10`,
+        `Date: ${new Date().toUTCString()}`,
+        'MIME-Version: 1.0',
+        'Content-Type: text/plain; charset=UTF-8',
+        'Content-Transfer-Encoding: 8bit',
+        '',
+        'Bonjour,',
+        '',
+        `Voici mon résultat à l’évaluation CyberSnake : ${score}/10.`,
+        `Statut : ${passed?'Compétences validées':'Entraînement à poursuivre'}.`,
+        '',
+        'Cordialement'
+      ];
+      const url=URL.createObjectURL(new Blob([lines.join('\r\n')],{type:'message/rfc822;charset=utf-8'}));
+      const link=document.createElement('a');
+      link.href=url;
+      link.download=`resultat-cybersnake-${score}-sur-10.eml`;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      setTimeout(()=>URL.revokeObjectURL(url),1000);
+    }
+    function finish(){running=false;$('status').textContent='COMPLETE';const passed=score>8;panel.innerHTML=`<div class="start-box"><p class="eyebrow">// Operation complete</p><div class="result-score">${score}/10</div><h2>${passed?'Skills validated':'Keep training'}</h2><p>${passed?'Outstanding work. Your cyber fundamentals are mission-ready.':'Score 9 or higher to validate your skills. Review the domains and try again.'}</p><div class="result-actions"><button class="secondary" id="email-result">Envoyer mes résultats par e-mail</button><button class="primary" id="again">Run again</button></div></div>`;$('email-result').onclick=downloadResultEmail;$('again').onclick=startGame;}
     document.addEventListener('keydown',e=>{const m={ArrowUp:[0,-1],w:[0,-1],W:[0,-1],ArrowDown:[0,1],s:[0,1],S:[0,1],ArrowLeft:[-1,0],a:[-1,0],A:[-1,0],ArrowRight:[1,0],d:[1,0],D:[1,0]};if(m[e.key]){e.preventDefault();setDir(...m[e.key])}});document.querySelectorAll('[data-dir]').forEach(b=>b.onclick=()=>({up:()=>setDir(0,-1),down:()=>setDir(0,1),left:()=>setDir(-1,0),right:()=>setDir(1,0)})[b.dataset.dir]());$('start').onclick=startGame;resetSnake();draw();
   </script>
 </body>
